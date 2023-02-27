@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	errs "go.flipt.io/flipt/errors"
+	"go.flipt.io/flipt/internal/server/audit"
 	"go.flipt.io/flipt/internal/server/cache"
 	"go.flipt.io/flipt/internal/server/metrics"
 	flipt "go.flipt.io/flipt/rpc/flipt"
@@ -19,6 +20,30 @@ import (
 	"google.golang.org/protobuf/proto"
 	timestamp "google.golang.org/protobuf/types/known/timestamppb"
 )
+
+// AuditorUnaryInterceptor sends audit logs to configured sinks before sending out the RPC response
+func AuditorUnaryInterceptor(logger *zap.Logger, auditor audit.Auditor) grpc.UnaryServerInterceptor {
+	return func(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		resp, err := handler(ctx, req)
+		if err != nil {
+			return resp, err
+		}
+
+		switch r := req.(type) {
+		case *flipt.CreateFlagRequest:
+			if err := auditor.SendAudit(&audit.Audit{Action: audit.ActionCreate, Noun: audit.NounFlag, ResourceName: r.Name, Emoji: audit.EmojiCreate}); err != nil {
+				// Only log out the error here, we can track it for observability purposes in our logs
+				// but this should not short circuit or affect the RPC call in any way
+				logger.Error("error sending message", zap.Stringer("sink", auditor), zap.Error(err))
+			}
+		case *flipt.UpdateFlagRequest:
+		case *flipt.DeleteFlagRequest:
+		case *flipt.CreateRuleRequest:
+		}
+
+		return resp, err
+	}
+}
 
 // ValidationUnaryInterceptor validates incoming requests
 func ValidationUnaryInterceptor(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
