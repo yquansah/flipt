@@ -29,7 +29,7 @@ func NewSlackAuditor(apiToken string, channelName string) *SlackAuditor {
 	}
 }
 
-// SendAudit sends a message to slack
+// SendAudit sends an Audit message to slack
 func (s *SlackAuditor) SendAudit(audit *audit.Audit) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

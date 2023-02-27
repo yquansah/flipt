@@ -12,6 +12,7 @@ import (
 	"go.flipt.io/flipt/internal/info"
 	fliptserver "go.flipt.io/flipt/internal/server"
 	"go.flipt.io/flipt/internal/server/audit"
+	"go.flipt.io/flipt/internal/server/audit/discord"
 	"go.flipt.io/flipt/internal/server/audit/slack"
 	"go.flipt.io/flipt/internal/server/cache"
 	"go.flipt.io/flipt/internal/server/cache/memory"
@@ -265,7 +266,13 @@ func NewGRPCServer(
 	}
 
 	if cfg.Audit.Enabled {
-		var auditor audit.Auditor = slack.NewSlackAuditor(cfg.Audit.Slack.ApiToken, cfg.Audit.Slack.Channel)
+		var auditor audit.Auditor
+		switch cfg.Audit.Auditor {
+		case config.AuditorSlack:
+			auditor = slack.NewSlackAuditor(cfg.Audit.Slack.ApiToken, cfg.Audit.Slack.Channel)
+		case config.AuditorDiscord:
+			auditor = discord.NewDiscordAuditor(cfg.Audit.Discord.BotToken, cfg.Audit.Discord.ChannelID)
+		}
 
 		interceptors = append(interceptors, middlewaregrpc.AuditorUnaryInterceptor(logger, auditor))
 

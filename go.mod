@@ -6,6 +6,7 @@ require (
 	github.com/Masterminds/squirrel v1.5.3
 	github.com/XSAM/otelsql v0.19.0
 	github.com/blang/semver/v4 v4.0.0
+	github.com/bwmarrin/discordgo v0.27.0
 	github.com/coreos/go-oidc/v3 v3.5.0
 	github.com/docker/go-connections v0.4.0
 	github.com/fatih/color v1.14.1
@@ -132,7 +133,7 @@ require (
 	go.opentelemetry.io/proto/otlp v0.19.0 // indirect
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
-	golang.org/x/crypto v0.1.0 // indirect
+	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/oauth2 v0.5.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
