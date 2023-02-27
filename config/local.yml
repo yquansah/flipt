@@ -31,9 +31,3 @@ cors:
 db:
   url: file:flipt.db
 
-# audit:
-#   enabled: true
-#   auditor: slack
-#   slack:
-#     channel: general
-  
