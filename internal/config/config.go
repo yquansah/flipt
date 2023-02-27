@@ -22,6 +22,7 @@ var decodeHooks = mapstructure.ComposeDecodeHookFunc(
 	stringToEnumHookFunc(stringToScheme),
 	stringToEnumHookFunc(stringToDatabaseProtocol),
 	stringToEnumHookFunc(stringToAuthMethod),
+	stringToEnumHookFunc(stringToAuditorSink),
 )
 
 // Config contains all of Flipts configuration needs.
@@ -47,6 +48,7 @@ type Config struct {
 	Database       DatabaseConfig       `json:"db,omitempty" mapstructure:"db"`
 	Meta           MetaConfig           `json:"meta,omitempty" mapstructure:"meta"`
 	Authentication AuthenticationConfig `json:"authentication,omitempty" mapstructure:"authentication"`
+	Audit          AuditConfig          `json:"audit,omitempty" mapstructure:"audit"`
 }
 
 type Result struct {
